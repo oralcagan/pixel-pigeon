@@ -1,31 +1,14 @@
 # � Pixel Pigeon - Email Forwarding Service
 
-A secure, containerized API service for sending beautifully formatted HTML emails with authentication tokens and logo support.
+Containerized API service for sending notification emails to preconfigured list of users.
 
-![Email Service](https://img.shields.io/badge/Email-Service-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-green)
-![Docker](https://img.shields.io/badge/Docker-Ready-blue)
-![Python](https://img.shields.io/badge/Python-3.11-blue)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
-
-## ✨ Features
-
-- **🔐 Token-based Authentication**: Secure Bearer token system
-- **🎨 Beautiful HTML Emails**: Responsive templates with modern design
-- **🖼️ Logo Support**: Inline image embedding with fallback
-- **📱 Multi-format**: HTML with plain text fallback
-- **🐳 Docker Ready**: Complete containerization with Docker Compose
-- **📊 Health Monitoring**: Built-in health checks and logging
-- **🔄 Live Configuration**: Hot-reload configuration without restart
-- **📚 API Documentation**: Auto-generated OpenAPI/Swagger docs
-
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Clone and Setup
 
 ```bash
-git clone &lt;your-repo&gt;
-cd email-notif-service
+git clone pixel-pigeon
+cd pixel-pigeon
 cp .env.example .env
 ```
 
@@ -161,17 +144,6 @@ const result = await response.json();
 console.log(result);
 ```
 
-## 🎨 Email Template
-
-The service generates beautiful HTML emails with:
-
-- **Header**: Gradient background with logo (if provided)
-- **Title Section**: Highlighted with accent border
-- **Message Body**: Clean formatting with line break support
-- **Footer**: Timestamp and service branding
-- **Responsive Design**: Works on desktop and mobile
-- **Plain Text Fallback**: For clients that don't support HTML
-
 ### Sample Email Output
 
 ```
@@ -190,7 +162,7 @@ Immediate attention required.
 Sent via Email Forwarding Service • 2025-09-12 14:30:25
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -216,30 +188,6 @@ The `config.json` file maps tokens to allowed recipients:
     "sales-token-789": ["sales@company.com", "manager@company.com"]
   }
 }
-```
-
-**Security Best Practices:**
-- Generate tokens using `secrets.token_hex(32)` in Python
-- Use different tokens for different purposes
-- Rotate tokens regularly
-- Never commit real tokens to version control
-
-## 🐳 Docker Deployment
-
-### Development
-
-```bash
-# Build and run
-docker-compose up --build
-
-# Run in background
-docker-compose up -d
-
-# View logs
-docker-compose logs -f email-service
-
-# Stop service
-docker-compose down
 ```
 
 ### Using Pre-built Image from GitHub Container Registry
@@ -273,7 +221,7 @@ docker-compose -f docker-compose.yml up -d
    restart: unless-stopped
    ```
 
-## 🔍 Monitoring and Logs
+## Monitoring and Logs
 
 ### Health Check
 
@@ -293,169 +241,3 @@ docker logs email-forwarding-service
 # Filter logs
 docker-compose logs email-service | grep ERROR
 ```
-
-### Sample Log Output
-
-```
-2025-09-12 14:30:25 [INFO] Starting Email Forwarding Service...
-2025-09-12 14:30:25 [INFO] SMTP Host: smtp.gmail.com:587
-2025-09-12 14:30:25 [INFO] From Email: notifications@company.com
-2025-09-12 14:30:45 [INFO] HTML message 'System Alert' sent to ['admin@company.com'] via token secure...
-```
-
-## 🧪 Testing with Postman
-
-A comprehensive Postman collection is provided for testing all API endpoints:
-
-### Import Collection
-1. Open Postman
-2. Import `postman/Email-Forwarding-Service.postman_collection.json`
-3. Import environment: `postman/Email-Forwarding-Service-Local.postman_environment.json`
-4. Update the `auth_token` variable with your actual token
-
-### Collection Features
-- ✅ All API endpoints with examples
-- ✅ Automated tests for response validation
-- ✅ Error condition testing
-- ✅ Multiple environment configurations
-- ✅ Pre-request scripts for dynamic data
-
-### Run All Tests
-```bash
-# Using Newman (Postman CLI)
-npm install -g newman
-newman run postman/Email-Forwarding-Service.postman_collection.json \
-  -e postman/Email-Forwarding-Service-Local.postman_environment.json
-```
-
-## 🚀 CI/CD with GitHub Actions
-
-The project includes automated CI/CD workflows:
-
-### Build & Push Workflow
-- **Triggers**: Push to main/develop, tags, PRs
-- **Actions**: 
-  - Multi-platform Docker builds (amd64, arm64)
-  - Push to GitHub Container Registry
-  - Security scanning with Trivy
-  - Automatic tagging (latest, semver, branch)
-
-### CI/CD Pipeline
-- **Testing**: Python linting, pytest, application startup tests
-- **Docker Testing**: Container build and health check validation
-- **Documentation**: Auto-deployment to GitHub Pages
-
-### Using the Workflows
-1. **Push to main**: Triggers full build, test, and deployment
-2. **Create release tag**: `git tag v1.0.0 && git push origin v1.0.0`
-3. **Pull requests**: Automatically tested before merge
-
-### Container Registry
-Images are automatically published to:
-```
-ghcr.io/oralcagan/pixel-pigeon:latest
-ghcr.io/oralcagan/pixel-pigeon:v1.0.0
-ghcr.io/oralcagan/pixel-pigeon:main
-```
-
-## 🔧 Development
-
-### Local Development
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Set environment variables
-export SMTP_HOST=smtp.gmail.com
-export SMTP_USER=your-email@gmail.com
-# ... other variables
-
-# Run development server
-python app.py
-```
-
-### Running Tests
-
-```bash
-# Install test dependencies
-pip install pytest httpx
-
-# Run tests
-pytest tests/
-```
-
-## 📊 API Responses
-
-### Success Response
-
-```json
-{
-  "status": "sent",
-  "recipients": ["user@example.com"]
-}
-```
-
-### Error Responses
-
-| Status | Error | Description |
-|--------|-------|-------------|
-| 400 | Bad Request | Missing title or message |
-| 401 | Unauthorized | Missing Authorization header |
-| 403 | Forbidden | Invalid token |
-| 500 | Internal Server Error | SMTP or server error |
-
-## 🔒 Security Considerations
-
-- **Token Storage**: Store tokens securely, never in plain text
-- **SMTP Credentials**: Use app-specific passwords for Gmail
-- **Network Security**: Use HTTPS in production
-- **Rate Limiting**: Consider implementing rate limiting
-- **Input Validation**: All inputs are validated and sanitized
-- **Logging**: Sensitive data is not logged (tokens are truncated)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-## 🆘 Troubleshooting
-
-### Common Issues
-
-**SMTP Authentication Failed:**
-- Check SMTP credentials
-- Enable "Less secure app access" or use app passwords
-- Verify SMTP host and port
-
-**Token Unauthorized:**
-- Check token in config.json
-- Verify Authorization header format
-- Check for typos in token
-
-**Email Not Received:**
-- Check spam folder
-- Verify recipient email addresses
-- Check SMTP logs for errors
-
-**Docker Issues:**
-- Ensure Docker is running
-- Check port 8080 is available
-- Verify volume mounts
-
-### Getting Help
-
-- Check logs: `docker-compose logs email-service`
-- API docs: `http://localhost:8080/docs`
-- Health check: `http://localhost:8080/health`
-
----
-
-**Made with ❤️ for reliable email notifications**
