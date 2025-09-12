@@ -6,6 +6,7 @@ A secure, containerized API service for sending beautifully formatted HTML email
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-green)
 ![Docker](https://img.shields.io/badge/Docker-Ready-blue)
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ## ✨ Features
 
@@ -423,7 +424,7 @@ pytest tests/
 
 ## 📄 License
 
-MIT License - see LICENSE file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🆘 Troubleshooting
 
