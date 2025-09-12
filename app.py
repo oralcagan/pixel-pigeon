@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Email Forwarding Service API
+Pixel Pigeon - Email Forwarding Service API
 
 A secure API service for sending formatted emails with HTML templates,
 authentication tokens, and logo support.
@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Email Forwarding Service",
+    title="Pixel Pigeon - Email Forwarding Service",
     description="A secure API for sending formatted HTML emails with authentication",
     version="1.0.0",
     docs_url="/docs",
@@ -139,7 +139,7 @@ def create_html_template(title: str, message: str, has_logo: bool = False) -> st
             <!-- Footer -->
             <div style="background-color: #f7fafc; padding: 20px 30px; text-align: center; border-top: 1px solid #e2e8f0;">
                 <p style="color: #718096; margin: 0; font-size: 14px;">
-                    Sent via Email Forwarding Service • {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+                    Sent via Pixel Pigeon • {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
                 </p>
             </div>
         </div>
@@ -158,7 +158,7 @@ def create_plain_text(title: str, message: str) -> str:
 {message}
 
 ---
-Sent via Email Forwarding Service
+Sent via Pixel Pigeon
 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
     """.strip()
 
@@ -219,7 +219,7 @@ def send_email(recipients: List[str], title: str, message: str) -> bool:
 async def root():
     """Root endpoint with service information."""
     return {
-        "service": "Email Forwarding Service",
+        "service": "Pixel Pigeon - Email Forwarding Service",
         "version": "1.0.0",
         "status": "active",
         "endpoints": {
@@ -305,7 +305,7 @@ if __name__ == "__main__":
         logger.error("Missing required SMTP environment variables")
         exit(1)
     
-    logger.info("Starting Email Forwarding Service...")
+    logger.info("Starting Pixel Pigeon Email Forwarding Service...")
     logger.info(f"SMTP Host: {SMTP_HOST}:{SMTP_PORT}")
     logger.info(f"From Email: {FROM_EMAIL}")
     logger.info(f"Config File: {CONFIG_FILE}")

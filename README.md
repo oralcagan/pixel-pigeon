@@ -1,4 +1,4 @@
-# 📬 Email Forwarding Service
+# � Pixel Pigeon - Email Forwarding Service
 
 A secure, containerized API service for sending beautifully formatted HTML emails with authentication tokens and logo support.
 
@@ -246,7 +246,7 @@ docker-compose down
 
 ```bash
 # Pull the latest image
-docker pull ghcr.io/yourusername/email-notif-service:latest
+docker pull ghcr.io/oralcagan/pixel-pigeon:latest
 
 # Run with docker-compose using the pre-built image
 docker-compose -f docker-compose.yml up -d
@@ -353,9 +353,9 @@ The project includes automated CI/CD workflows:
 ### Container Registry
 Images are automatically published to:
 ```
-ghcr.io/yourusername/email-notif-service:latest
-ghcr.io/yourusername/email-notif-service:v1.0.0
-ghcr.io/yourusername/email-notif-service:main
+ghcr.io/oralcagan/pixel-pigeon:latest
+ghcr.io/oralcagan/pixel-pigeon:v1.0.0
+ghcr.io/oralcagan/pixel-pigeon:main
 ```
 
 ## 🔧 Development
