@@ -147,9 +147,9 @@ def create_html_template(title: str, message: str, has_logo: bool = False) -> st
     <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fa;">
         <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden;">
             <!-- Header -->
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
+            <div style="background-color: #ffffff; padding: 40px 30px; text-align: center; border-bottom: 1px solid #e2e8f0;">
                 {logo_section}
-                <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                <h1 style="color: #2d3748; margin: 0; font-size: 28px; font-weight: 600;">
                     {get_text('email_notification')}
                 </h1>
             </div>
