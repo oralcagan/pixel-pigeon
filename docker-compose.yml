@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  email-service:
+    build: .
+    container_name: email-forwarding-service
+    ports:
+      - "8080:8080"
+    environment:
+      # SMTP Configuration - UPDATE THESE VALUES
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USER: your-email@gmail.com
+      SMTP_PASS: your-app-password
+      FROM_EMAIL: your-email@gmail.com
+      
+      # Application Configuration
+      CONFIG_FILE: /app/config.json
+      LOGO_PATH: /app/logo.jpg
+    
+    volumes:
+      # Mount config file for live updates
+      - ./config.json:/app/config.json:ro
+      
+      # Mount logo file (optional)
+      - ./logo.jpg:/app/logo.jpg:ro
+      
+      # Optional: Mount for logs persistence
+      # - ./logs:/app/logs
+    
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8080/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  default:
+    name: email-service-network

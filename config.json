@@ -1,0 +1,7 @@
+{
+  "tokens": {
+    "demo_token_abc123": ["support@example.com"],
+    "demo_token_def456": ["sales@example.com", "manager@example.com"],
+    "secure_token_789xyz": ["admin@example.com"]
+  }
+}
