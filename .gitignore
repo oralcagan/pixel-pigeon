@@ -62,3 +62,5 @@ config.json.backup
 # Local test files
 test_config.json
 logo_test.*
+out/
+logo.jpg

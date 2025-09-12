@@ -1,4 +1,4 @@
-# � Pixel Pigeon - Email Forwarding Service
+# Pixel Pigeon - Email Forwarding Service
 
 Containerized API service for sending notification emails to preconfigured list of users.
 

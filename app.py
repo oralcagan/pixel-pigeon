@@ -5,7 +5,9 @@ Pixel Pigeon - Email Forwarding Service API
 A secure API service for sending formatted emails with HTML templates,
 authentication tokens, and logo support.
 """
+from dotenv import load_dotenv
 
+load_dotenv()  # take environment variables
 import os
 import json
 import logging
@@ -59,6 +61,37 @@ SMTP_USER = os.getenv('SMTP_USER')
 SMTP_PASS = os.getenv('SMTP_PASS')
 FROM_EMAIL = os.getenv('FROM_EMAIL')
 LOGO_PATH = os.getenv('LOGO_PATH', '/app/logo.jpg')
+LANGUAGE = os.getenv('LANGUAGE', 'en').lower()  # 'en' or 'tr'
+
+# Language translations
+TRANSLATIONS = {
+    'en': {
+        'email_notification': 'Email Notification',
+        'sent_via': 'Sent via Pixel Pigeon',
+        'service_name': 'Pixel Pigeon - Email Forwarding Service',
+        'service_status': 'active',
+        'endpoints': {
+            'send': 'POST /send',
+            'docs': 'GET /docs', 
+            'health': 'GET /health'
+        }
+    },
+    'tr': {
+        'email_notification': 'E-posta Bildirimi',
+        'sent_via': 'Pixel Pigeon ile gönderildi',
+        'service_name': 'Pixel Pigeon - E-posta Yönlendirme Servisi',
+        'service_status': 'aktif',
+        'endpoints': {
+            'send': 'POST /send',
+            'docs': 'GET /docs',
+            'health': 'GET /health'
+        }
+    }
+}
+
+def get_text(key: str) -> str:
+    """Get translated text based on language setting."""
+    return TRANSLATIONS.get(LANGUAGE, TRANSLATIONS['en']).get(key, key)
 
 def load_config() -> Dict:
     """Load token configuration from file."""
@@ -95,8 +128,8 @@ def validate_token(credentials: HTTPAuthorizationCredentials = Depends(security)
 def create_html_template(title: str, message: str, has_logo: bool = False) -> str:
     """Create a beautiful HTML email template."""
     logo_section = '''
-        <div style="text-align: center; margin-bottom: 30px;">
-            <img src="cid:logo" alt="Logo" style="max-width: 200px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <div style="text-align: center; margin-bottom: 30px; background-color: #ffffff; padding: 20px; border-radius: 8px;">
+            <img src="cid:logo" alt="Logo" style="max-width: 200px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background-color: #ffffff;">
         </div>
     ''' if has_logo else ''
     
@@ -105,7 +138,7 @@ def create_html_template(title: str, message: str, has_logo: bool = False) -> st
     
     html_template = f"""
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="{LANGUAGE}">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -117,7 +150,7 @@ def create_html_template(title: str, message: str, has_logo: bool = False) -> st
             <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
                 {logo_section}
                 <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
-                    Email Notification
+                    {get_text('email_notification')}
                 </h1>
             </div>
             
@@ -139,7 +172,7 @@ def create_html_template(title: str, message: str, has_logo: bool = False) -> st
             <!-- Footer -->
             <div style="background-color: #f7fafc; padding: 20px 30px; text-align: center; border-top: 1px solid #e2e8f0;">
                 <p style="color: #718096; margin: 0; font-size: 14px;">
-                    Sent via Pixel Pigeon • {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+                    {get_text('sent_via')} • {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
                 </p>
             </div>
         </div>
@@ -158,21 +191,30 @@ def create_plain_text(title: str, message: str) -> str:
 {message}
 
 ---
-Sent via Pixel Pigeon
+{get_text('sent_via')}
 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
     """.strip()
 
 def send_email(recipients: List[str], title: str, message: str) -> bool:
     """Send the formatted email to recipients."""
     try:
+        # Validate SMTP credentials
+        if not SMTP_USER or not SMTP_PASS or not FROM_EMAIL:
+            logger.error("SMTP credentials not configured")
+            return False
+            
         # Create message
         msg = MIMEMultipart('related')
         msg['From'] = FROM_EMAIL
         msg['To'] = ', '.join(recipients)
         msg['Subject'] = title
         
-        # Check if logo exists
+        # Check if logo exists (checked on every request for dynamic loading)
         has_logo = os.path.exists(LOGO_PATH)
+        if has_logo:
+            logger.debug(f"Logo found at {LOGO_PATH}")
+        else:
+            logger.debug(f"No logo found at {LOGO_PATH}")
         
         # Create HTML and text versions
         html_content = create_html_template(title, message, has_logo)
@@ -203,11 +245,18 @@ def send_email(recipients: List[str], title: str, message: str) -> bool:
             except Exception as e:
                 logger.warning(f"Could not attach logo: {e}")
         
-        # Send email
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-            server.starttls()
-            server.login(SMTP_USER, SMTP_PASS)
-            server.send_message(msg)
+        # Send email with secure connection
+        if SMTP_PORT == 465:
+            # Use SSL for port 465
+            with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT) as server:
+                server.login(SMTP_USER, SMTP_PASS)
+                server.send_message(msg)
+        else:
+            # Use TLS for other ports (587, 25)
+            with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+                server.starttls()
+                server.login(SMTP_USER, SMTP_PASS)
+                server.send_message(msg)
         
         return True
         
@@ -219,14 +268,11 @@ def send_email(recipients: List[str], title: str, message: str) -> bool:
 async def root():
     """Root endpoint with service information."""
     return {
-        "service": "Pixel Pigeon - Email Forwarding Service",
+        "service": get_text("service_name"),
         "version": "1.0.0",
-        "status": "active",
-        "endpoints": {
-            "send": "POST /send",
-            "docs": "GET /docs",
-            "health": "GET /health"
-        }
+        "status": get_text("service_status"),
+        "language": LANGUAGE,
+        "endpoints": get_text("endpoints")
     }
 
 @app.get("/health")
@@ -236,6 +282,7 @@ async def health_check():
     return {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
+        "language": LANGUAGE,
         "smtp_configured": bool(SMTP_HOST and SMTP_USER and SMTP_PASS and FROM_EMAIL),
         "tokens_configured": len(config.get("tokens", {})),
         "logo_available": os.path.exists(LOGO_PATH)
@@ -305,7 +352,8 @@ if __name__ == "__main__":
         logger.error("Missing required SMTP environment variables")
         exit(1)
     
-    logger.info("Starting Pixel Pigeon Email Forwarding Service...")
+    logger.info(f"Starting {get_text('service_name')}...")
+    logger.info(f"Language: {LANGUAGE.upper()}")
     logger.info(f"SMTP Host: {SMTP_HOST}:{SMTP_PORT}")
     logger.info(f"From Email: {FROM_EMAIL}")
     logger.info(f"Config File: {CONFIG_FILE}")
