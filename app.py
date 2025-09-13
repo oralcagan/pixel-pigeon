@@ -133,8 +133,8 @@ def create_html_template(title: str, message: str, has_logo: bool = False) -> st
         </div>
     ''' if has_logo else ''
     
-    # Convert newlines to HTML breaks
-    formatted_message = message.replace('\n', '<br>')
+    # Convert newlines to HTML breaks and trim whitespace
+    formatted_message = message.strip().replace('\n', '<br>')
     
     html_template = f"""
     <!DOCTYPE html>
@@ -163,7 +163,7 @@ def create_html_template(title: str, message: str, has_logo: bool = False) -> st
                 </div>
                 
                 <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 25px; line-height: 1.6;">
-                    <p style="color: #4a5568; margin: 0; font-size: 16px; white-space: pre-wrap;">
+                    <p style="color: #4a5568; margin: 0; font-size: 16px;">
                         {formatted_message}
                     </p>
                 </div>
